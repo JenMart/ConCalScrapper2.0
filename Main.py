@@ -38,8 +38,8 @@ def main():
 
 def snipDip(bigAssFile):
 
-    # for x in range(1,len(bigAssFile)): #If it's stupid and it works, it ain't stupid.
-    for x in range(7,15):
+    for x in range(1,len(bigAssFile)): #If it's stupid and it works, it ain't stupid.
+    # for x in range(100,115):
         html = urlopen("https://convergence2018.sched.com/event/"+bigAssFile[x])
         slice = str(html.read())
 
@@ -59,20 +59,27 @@ def snipDip(bigAssFile):
         ##############
 
         ############## Date/Time
-
+        #Thursday July 5, 2018 17:30 - 18:30
+        #Thursday July 5, 2018 08:00 - Friday July 6, 2018 00:00
         dateTimeFront = r"""<div class="sched-event-details-timeandplace">\n"""
         dateTimeBack = r"""\n<br"""
         dateTime1 = slice.split(dateTimeFront)[1]
         dateTime2 = dateTime1[:dateTime1.find(dateTimeBack)]
-        monthDate = dateTime2.split(" ")[1]
+        monthDate = dateTime2.split(" ")[1] # Not need but keeping it
         dayDate = dateTime2.split(" ")[3][0]
         yearDate = dateTime2.split(" ")[4]
         startTime = dateTime2.split(" ")[5]
-        endTime = dateTime2.split(" ")[7]
+        parsedTimeStart = yearDate + "-" + "7" + "-" + dayDate + "T" + startTime + ":00%s"
 
-        # '2018-06-18T19:00:00%s'
-        parsedTimeStart = yearDate + "-"  + "7" + "-" + dayDate + "T" + startTime + ":00%s"
-        parsedTimeEnd = yearDate + "-"  + "7" + "-" + dayDate + "T" + endTime + ":00%s"
+        if dateTime2.count('July') > 1:
+            endDay = dateTime2.split(" ")[10][0]
+            endYear = dateTime2.split(" ")[10]
+            endTime = dateTime2.split(" ")[12]
+            parsedTimeEnd = yearDate + "-" + "7" + "-" + endDay + "T" + endTime + ":00%s"
+            # print(parsedTimeEnd)
+        else:
+            endTime = dateTime2.split(" ")[7]
+            parsedTimeEnd = yearDate + "-" + "7" + "-" + dayDate + "T" + endTime + ":00%s"
         ##############
 
         ############## Location
@@ -90,16 +97,20 @@ def snipDip(bigAssFile):
         type1 = slice.split(typeFront)[1]
         typeFinal = type1[:type1.find(typeBack) - 1].replace("+", " ").strip()
 
-        # CalendarSLAM(nameFinal, descFinal, parsedTimeStart, parsedTimeEnd, locaFinal, typeFinal)
-        print("Name: " + nameFinal)
-        print("Description: " + descFinal)
-        print("starts: " + parsedTimeStart + " ends: " + parsedTimeEnd)
-        print("Location: " + locaFinal)
-        print("Type: " + typeFinal)
-        print("\n")
+        CalendarSLAM(nameFinal, descFinal, parsedTimeStart, parsedTimeEnd, locaFinal, typeFinal)
+        # print("Name: " + nameFinal)
+        # print("Description: " + descFinal)
+        # print("starts: " + parsedTimeStart + " ends: " + parsedTimeEnd)
+        # print("Location: " + locaFinal)
+        # print("Type: " + typeFinal)
+        # print("\n")
 
 
 def CalendarSLAM(name, description, startTime, endTime, location, eventType):
+    calendarIDArray = ['gtgchbutq6v6g8ousn9e31nl60','cpmjsnrgmaicvnc88lvv507io0','o93ge92fp8u34r33o80vnda6lo',
+                       'b7b70sgmlmhfn3e1fmmr2n57rc','2i032bhtd6jmc9atrvh4nm0htk','mdj4gv9elr8f6664jnhpp7q2n0',
+                       '24kmnn6bmt2arg0qs3mto7cvps','juomqk563020eavbqn341g6o4c','0o8rnguk68qv13ggfjsa5uq3kg',
+                       'vhptereevv68jpd45ar502cs90','vtarafelloqtvnnbhq8sclbnfg','s5rss2cqm8vn9iulnlm4bgjlro']
     SCOPES = 'https://www.googleapis.com/auth/calendar'
     store = file.Storage('storage.json')
     creds = store.get()
@@ -117,8 +128,45 @@ def CalendarSLAM(name, description, startTime, endTime, location, eventType):
         'location': location,
     }
 
-    e = GCAL.events().insert(calendarId='agbkvd4out0gkidn778qeql20c@group.calendar.google.com',
-                             sendNotifications=True, body=EVENT).execute()
+    # e = GCAL.events().insert(calendarId='agbkvd4out0gkidn778qeql20c' + '@group.calendar.google.com',
+    #                          sendNotifications=True, body=EVENT).execute()
+    if "activity" in eventType.lower():
+        e = GCAL.events().insert(calendarId= calendarIDArray[0] + '@group.calendar.google.com',
+                                 sendNotifications=True, body=EVENT).execute()
+    if "book" in eventType.lower():
+        e = GCAL.events().insert(calendarId= calendarIDArray[1] + '@group.calendar.google.com',
+                                 sendNotifications=True, body=EVENT).execute()
+    if "event" in eventType.lower():
+        e = GCAL.events().insert(calendarId= calendarIDArray[2] + '@group.calendar.google.com',
+                                 sendNotifications=True, body=EVENT).execute()
+    if "game" in eventType.lower():
+        e = GCAL.events().insert(calendarId= calendarIDArray[3] + '@group.calendar.google.com',
+                                 sendNotifications=True, body=EVENT).execute()
+    if "operation" in eventType.lower():
+        e = GCAL.events().insert(calendarId= calendarIDArray[4] + '@group.calendar.google.com',
+                                 sendNotifications=True, body=EVENT).execute()
+    if "movie" in eventType.lower():
+        e = GCAL.events().insert(calendarId= calendarIDArray[5] + '@group.calendar.google.com',
+                                 sendNotifications=True, body=EVENT).execute()
+    if "other" in eventType.lower():
+        e = GCAL.events().insert(calendarId= calendarIDArray[6] + '@group.calendar.google.com',
+                                 sendNotifications=True, body=EVENT).execute()
+    if "panel" in eventType.lower():
+        e = GCAL.events().insert(calendarId= calendarIDArray[7] + '@group.calendar.google.com',
+                                 sendNotifications=True, body=EVENT).execute()
+    if "performance" in eventType.lower():
+        e = GCAL.events().insert(calendarId= calendarIDArray[8] + '@group.calendar.google.com',
+                                 sendNotifications=True, body=EVENT).execute()
+    if "presentation" in eventType.lower():
+        e = GCAL.events().insert(calendarId= calendarIDArray[9] + '@group.calendar.google.com',
+                                 sendNotifications=True, body=EVENT).execute()
+    if "reading" in eventType.lower():
+        e = GCAL.events().insert(calendarId= calendarIDArray[10] + '@group.calendar.google.com',
+                                 sendNotifications=True, body=EVENT).execute()
+    if "signing" in eventType.lower():
+        e = GCAL.events().insert(calendarId= calendarIDArray[11] + '@group.calendar.google.com',
+                                 sendNotifications=True, body=EVENT).execute()
+
 
     print('''*** %r event added:
         Start: %s
@@ -129,4 +177,16 @@ def CalendarSLAM(name, description, startTime, endTime, location, eventType):
 
 if __name__ == "__main__":
     main()
+# https://calendar.google.com/calendar/ical/gtgchbutq6v6g8ousn9e31nl60%40group.calendar.google.com/public/basic.ics
+# https://calendar.google.com/calendar/ical/cpmjsnrgmaicvnc88lvv507io0%40group.calendar.google.com/public/basic.ics
+# https://calendar.google.com/calendar/ical/o93ge92fp8u34r33o80vnda6lo%40group.calendar.google.com/public/basic.ics
+# https://calendar.google.com/calendar/ical/b7b70sgmlmhfn3e1fmmr2n57rc%40group.calendar.google.com/public/basic.ics
+# https://calendar.google.com/calendar/ical/2i032bhtd6jmc9atrvh4nm0htk%40group.calendar.google.com/public/basic.ics
+# https://calendar.google.com/calendar/ical/mdj4gv9elr8f6664jnhpp7q2n0%40group.calendar.google.com/public/basic.ics
+# https://calendar.google.com/calendar/ical/24kmnn6bmt2arg0qs3mto7cvps%40group.calendar.google.com/public/basic.ics
+# https://calendar.google.com/calendar/ical/juomqk563020eavbqn341g6o4c%40group.calendar.google.com/public/basic.ics
+# https://calendar.google.com/calendar/ical/0o8rnguk68qv13ggfjsa5uq3kg%40group.calendar.google.com/public/basic.ics
+# https://calendar.google.com/calendar/ical/vhptereevv68jpd45ar502cs90%40group.calendar.google.com/public/basic.ics
+# https://calendar.google.com/calendar/ical/vtarafelloqtvnnbhq8sclbnfg%40group.calendar.google.com/public/basic.ics
+# https://calendar.google.com/calendar/ical/s5rss2cqm8vn9iulnlm4bgjlro%40group.calendar.google.com/public/basic.ics
 
